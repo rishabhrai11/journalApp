@@ -1,8 +1,10 @@
 package com.risha.journalApp.controller;
 
+import com.risha.journalApp.api.response.WeatherResponse;
 import com.risha.journalApp.entity.User;
 import com.risha.journalApp.repository.UserRepository;
 import com.risha.journalApp.service.UserService;
+import com.risha.journalApp.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private WeatherService weatherService;
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -34,11 +38,26 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(){
+    public ResponseEntity<?> deleteUserById(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        userRepository.deleteByUserName(username);
+        userRepository.deleteByUserName(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greetings(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        WeatherResponse weatherResponse = weatherService.getWeather("Varanasi");
+        String greet = "";
+        if(weatherResponse != null){
+            if(weatherResponse.getCurrent().getIsDay().equals("Yes")){
+                greet = ", today looks like "+weatherResponse.getCurrent().getWeatherDescriptions().get(0);
+            }
+            else{
+                greet = ", tonight looks like "+weatherResponse.getCurrent().getWeatherDescriptions().get(0);
+            }
+        }
+        return new ResponseEntity<>("Hi, "+authentication.getName()+""+greet,HttpStatus.OK);
     }
 
 

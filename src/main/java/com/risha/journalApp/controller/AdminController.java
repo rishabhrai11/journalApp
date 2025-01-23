@@ -1,5 +1,6 @@
 package com.risha.journalApp.controller;
 
+import com.risha.journalApp.cache.AppCache;
 import com.risha.journalApp.entity.User;
 import com.risha.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AppCache appCache;
+
     @GetMapping("/all-users")
     public ResponseEntity<?> getAll(){
         List<User> all  = userService.getAll();
@@ -29,5 +33,10 @@ public class AdminController {
     public ResponseEntity<?> createAdminUser(@RequestBody User user){
         userService.saveAdmin(user);
         return new ResponseEntity<>(user,HttpStatus.CREATED);
+    }
+
+    @GetMapping("/clear-app-cache")
+    public void clearAppCache(){
+        appCache.init();
     }
 }
