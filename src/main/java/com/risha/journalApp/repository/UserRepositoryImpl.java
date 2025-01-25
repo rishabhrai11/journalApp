@@ -11,7 +11,7 @@ import java.util.List;
 public class UserRepositoryImpl {
 
     @Autowired
-    MongoTemplate mongoTemplate;
+    private MongoTemplate mongoTemplate;
 
     public List<User> getUSerForSA(){
         Query query = new Query();
